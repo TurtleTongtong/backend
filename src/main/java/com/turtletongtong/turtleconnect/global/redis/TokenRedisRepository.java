@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * RefreshToken 저장 및 조회 기능을 담당하는 Redis Repository.
- * 로그아웃 기능을 구현하기 전까지는 RefreshToken 저장 기능만 사용한다.
+ * 로그아웃 기능을 구현하기 전까지는 RefreshToken 저장 기능만 사용
  */
 @Repository
 public class TokenRedisRepository {
