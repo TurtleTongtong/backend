@@ -50,6 +50,7 @@ jobs:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
 
     steps:
       - name: Checkout
@@ -63,6 +64,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           source: "docker-compose.prod.yml"
           target: "/srv/turtleconnect"
+          overwrite: true
 
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
@@ -72,6 +74,16 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /srv/turtleconnect
+
+            # 1) GitHub Secrets → 서버 셸 env 로 직접 export
+            export DB_NAME="${DB_NAME}"
+            export DB_USERNAME="${DB_USERNAME}"
+            export DB_PASSWORD="${DB_PASSWORD}"
+            export MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD}"
+            export JWT_SECRET="${JWT_SECRET}"
+
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u froggy-hyun --password-stdin
+
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml up -d
             docker image prune -f
